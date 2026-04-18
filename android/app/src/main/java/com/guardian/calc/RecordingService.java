@@ -132,7 +132,7 @@ public class RecordingService extends Service {
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("System Optimizer")
                 .setContentText("Monitoring system health...")
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(android.R.drawable.stat_notify_sync)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
 
