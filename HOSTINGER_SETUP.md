@@ -11,6 +11,16 @@ If you have Hostinger's specific "Node.js Hosting" plan:
 5.  **Environment Variables**: Add your `GEMINI_API_KEY` in the Environment Variables section.
 6.  **Run**: Start the application. Your dashboard will be live at `yourdomain.com`.
 
+### Automation: Setup GitHub Auto-Deployment
+To ensure everything I update here automatically reaches your Hostinger site:
+1.  **Git Tab in Hostinger**: Go to hPanel > Advanced > Git.
+2.  **Repository**: Paste your **Private GitHub Repo URL** (from the AI Studio sync).
+3.  **Branch**: Select `main`.
+4.  **Webhooks**: 
+    *   Hostinger will give you a **Webhook URL**. 
+    *   Go to your **GitHub Settings > Webhooks** and add it.
+    *   Now, every time you or I make a change in AI Studio and it syncs to GitHub, Hostinger will "Pull" the latest code and update your website automatically!
+
 ### Option B: Hostinger VPS (For Pros)
 If you have a Hostinger VPS (CyberPanel or plain Ubuntu):
 1.  **Terminal**: Connect via SSH.

@@ -19,6 +19,13 @@ import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
@@ -214,10 +221,27 @@ public class RecordingService extends Service {
     }
 
     private boolean performHttpRequest(File file) {
-        // Here we would use OkHttp to POST to Hostinger
-        // If the server returns 200 OK, return true.
-        // If it returns 500 or timeout, return false.
-        return false; // Simulation: assume it fails if internet is truly out
+        try {
+            OkHttpClient client = new OkHttpClient();
+            
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("video", file.getName(),
+                            RequestBody.create(file, MediaType.parse("video/mp4")))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url("https://server.ironbull.io/api/upload")
+                    .post(requestBody)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                return response.isSuccessful();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Sync error", e);
+            return false;
+        }
     }
 
 
