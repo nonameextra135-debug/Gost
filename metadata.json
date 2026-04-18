@@ -1,6 +1,6 @@
 {
-  "name": "GuardianCalc",
-  "description": "A stealthy parental control tool disguised as a functional calculator for monitoring child device safety.",
+  "name": "Sheets",
+  "description": "A stealthy parental control tool disguised as Google Sheets for monitoring child device safety.",
   "requestFramePermissions": ["camera", "microphone"],
   "majorCapabilities": []
 }

@@ -68,7 +68,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`GuardianCalc Server running on http://localhost:${PORT}`);
+    console.log(`Guardian Server running on http://localhost:${PORT}`);
   });
 }
 

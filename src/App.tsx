@@ -1,72 +1,148 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator as CalcIcon, Settings, Lock, Shield, LayoutDashboard, History, Video, Bell, Eye, EyeOff, CheckCircle, AlertCircle, Menu } from 'lucide-react';
+import { 
+  FileSpreadsheet, 
+  Settings, 
+  Lock, 
+  Shield, 
+  LayoutDashboard, 
+  History, 
+  Video, 
+  Bell, 
+  Eye, 
+  EyeOff, 
+  Search, 
+  Plus, 
+  User, 
+  Clock, 
+  MoreVertical,
+  Star,
+  Download,
+  Share2,
+  Trash2,
+  FileText
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 // --- Types ---
-type AppMode = 'calculator' | 'dashboard';
+type AppMode = 'sheets' | 'dashboard';
 
 // --- Components ---
 
-const CalculatorDecoy = ({ onSecretCode }: { onSecretCode: () => void }) => {
-  const [display, setDisplay] = useState('');
-  const [history, setHistory] = useState<string[]>([]);
-
-  const handleInput = (val: string) => {
-    if (val === '=') {
-      if (display === '9876') { // THE SECRET CODE
+const SheetsDecoy = ({ onSecretCode }: { onSecretCode: () => void }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchQuery(val);
+    if (val === '9876') { // THE SECRET CODE entered in search
+      setTimeout(() => {
         onSecretCode();
-        return;
-      }
-      try {
-        // Simple eval-like logic (caution: real app should use a math parser)
-        const result = eval(display.replace('×', '*').replace('÷', '/'));
-        setHistory([...history, `${display} = ${result}`].slice(-3));
-        setDisplay(String(result));
-      } catch {
-        setDisplay('Error');
-      }
-    } else if (val === 'C') {
-      setDisplay('');
-    } else {
-      setDisplay(prev => prev + val);
+      }, 500);
     }
   };
 
-  const buttons = [
-    ['C', '(', ')', '÷'],
-    ['7', '8', '9', '×'],
-    ['4', '5', '6', '-'],
-    ['1', '2', '3', '+'],
-    ['0', '.', 'DEL', '=']
+  const recentFiles = [
+    { title: 'Budget 2026', edited: 'Edited 2h ago', owner: 'Me', starred: true },
+    { title: 'Project Timeline', edited: 'Edited Yesterday', owner: 'Work Group', starred: false },
+    { title: 'Weekly Expenses', edited: 'Edited 3d ago', owner: 'Me', starred: false },
+    { title: 'Contact List', edited: 'Edited Feb 12', owner: 'Me', starred: true },
+    { title: 'Event Planning', edited: 'Edited Jan 04', owner: 'Collaborator', starred: false },
   ];
 
   return (
-    <div className="flex flex-col h-full bg-[#1c1c1c] text-white p-4 font-sans select-none">
-      <div className="flex-1 flex flex-col justify-end items-end p-4 mb-4">
-        <div className="text-gray-400 text-sm h-6">{history[history.length - 1]}</div>
-        <div className="text-5xl font-light tracking-wider break-all">{display || '0'}</div>
+    <div className="flex flex-col h-full bg-white text-slate-800 font-sans select-none">
+      {/* Search Bar Decoration */}
+      <div className="p-4 pt-12 pb-2">
+        <div className="bg-slate-100 rounded-full py-3 px-4 flex items-center gap-3 shadow-sm border border-slate-200/50">
+          <Search className="w-5 h-5 text-slate-400" />
+          <input 
+            type="text" 
+            placeholder="Search in Sheets" 
+            value={searchQuery}
+            onChange={handleSearch}
+            className="bg-transparent border-none outline-none flex-1 text-slate-600 placeholder:text-slate-400"
+          />
+          <User className="w-8 h-8 p-1.5 bg-green-600 text-white rounded-full shadow-inner" />
+        </div>
       </div>
-      
-      <div className="grid grid-cols-4 gap-3 mb-8">
-        {buttons.flat().map((btn) => (
-          <motion.button
-            key={btn}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => btn === 'DEL' ? setDisplay(d => d.slice(0, -1)) : handleInput(btn)}
-            className={`
-              h-16 rounded-2xl flex items-center justify-center text-xl font-medium
-              ${['÷', '×', '-', '+', '='].includes(btn) ? 'bg-orange-500 text-white' : 
-                ['C', '(', ')'].includes(btn) ? 'bg-gray-400 text-black' : 'bg-[#333333]'}
-            `}
-          >
-            {btn}
-          </motion.button>
-        ))}
+
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+        <div>
+          <h2 className="text-sm font-semibold text-slate-500 mb-4 px-1 uppercase tracking-wider">Earlier this week</h2>
+          <div className="space-y-4">
+            {recentFiles.map((file, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="flex items-center gap-4 group active:bg-slate-50 p-1 rounded-xl transition-colors"
+                onClick={() => {
+                  if (file.title === 'Weekly Expenses') {
+                    // Alternative secret trigger: Clicking specific file 3 times? 
+                    // Let's stick to the search code for reliability.
+                  }
+                }}
+              >
+                <div className="p-3 bg-green-50 text-green-600 rounded-lg shadow-sm">
+                  <FileSpreadsheet className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-slate-900">{file.title}</p>
+                    {file.starred && <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />}
+                  </div>
+                  <p className="text-xs text-slate-400">{file.edited} • {file.owner}</p>
+                </div>
+                <button className="p-2 text-slate-300 hover:text-slate-500">
+                  <MoreVertical className="w-5 h-5" />
+                </button>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Suggestion Section */}
+        <div className="bg-green-50/30 rounded-3xl p-6 border border-green-100/50">
+           <div className="flex items-center gap-2 mb-2">
+             <FileSpreadsheet className="w-5 h-5 text-green-600" />
+             <span className="text-xs font-bold text-green-700 uppercase tracking-widest">New template</span>
+           </div>
+           <h3 className="text-lg font-bold text-slate-800 mb-2">Build your 2026 Roadmap</h3>
+           <p className="text-sm text-slate-500 mb-4 line-clamp-2 leading-relaxed">Organize projects, milestones, and deadlines in a professional timeline view.</p>
+           <button className="px-6 py-2 bg-green-600 text-white rounded-full text-sm font-bold shadow-lg shadow-green-900/10">Try Roadmap</button>
+        </div>
       </div>
-      
-      <div className="text-center text-[10px] text-gray-600 opacity-20">
-        v4.1.2 Standard Scientific Model
+
+      {/* Floating Action Button */}
+      <div className="fixed bottom-8 right-6">
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center border border-slate-100 group"
+        >
+          <div className="absolute inset-0 bg-green-50 opacity-0 group-active:opacity-100 rounded-2xl transition-opacity" />
+          <Plus className="w-8 h-8 text-green-600 relative z-10" strokeWidth={3} />
+        </motion.button>
+      </div>
+
+      <div className="p-4 border-t border-slate-100 flex items-center justify-around text-slate-400 bg-white">
+        <div className="flex flex-col items-center gap-1 text-green-600">
+          <FileText className="w-6 h-6" />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">Recent</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 opacity-50">
+          <Star className="w-6 h-6" />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">Starred</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 opacity-50">
+          <Share2 className="w-6 h-6" />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">Shared</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 opacity-50">
+          <Download className="w-6 h-6" />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">Offline</span>
+        </div>
       </div>
     </div>
   );
@@ -304,16 +380,16 @@ const ParentDashboard = ({ onClose }: { onClose: () => void }) => {
                       <label className="block text-sm font-semibold mb-2">Display Name</label>
                       <input 
                         type="text" 
-                        defaultValue="Calculator +" 
+                        defaultValue="Sheets" 
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-semibold mb-2">Icon Theme</label>
                       <div className="grid grid-cols-4 gap-4">
-                        {['Calculator', 'Notes', 'Compass', 'Clock'].map((icon) => (
-                           <button key={icon} className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2 ${icon === 'Calculator' ? 'border-indigo-500 bg-indigo-50/50' : 'border-slate-100 hover:border-slate-200'}`}>
-                             <div className="w-10 h-10 bg-slate-200 rounded-xl" />
+                        {['Sheets', 'Drive', 'Docs', 'Calculator'].map((icon) => (
+                           <button key={icon} className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2 ${icon === 'Sheets' ? 'border-indigo-500 bg-indigo-50/50' : 'border-slate-100 hover:border-slate-200'}`}>
+                             <div className={`w-10 h-10 rounded-xl ${icon === 'Sheets' ? 'bg-green-500' : 'bg-slate-200'}`} />
                              <span className="text-[10px] font-bold uppercase">{icon}</span>
                            </button>
                         ))}
@@ -327,7 +403,7 @@ const ParentDashboard = ({ onClose }: { onClose: () => void }) => {
                     <Lock className="w-5 h-5 text-indigo-500" />
                     Security Key
                   </h3>
-                  <p className="text-sm text-slate-500 mb-4">The code required to open this dashboard from the calculator decoy.</p>
+                  <p className="text-sm text-slate-500 mb-4">The code required in the Sheets search bar to open this dashboard.</p>
                   <input 
                     type="password" 
                     defaultValue="9876" 
@@ -374,7 +450,7 @@ const ParentDashboard = ({ onClose }: { onClose: () => void }) => {
 };
 
 export default function GuardianApp() {
-  const [mode, setMode] = useState<AppMode>('calculator');
+  const [mode, setMode] = useState<AppMode>('sheets');
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
@@ -384,32 +460,34 @@ export default function GuardianApp() {
 
   if (showSplash) {
     return (
-      <div className="h-screen w-screen bg-black flex items-center justify-center">
+      <div className="h-screen w-screen bg-white flex items-center justify-center">
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="flex flex-col items-center gap-4"
         >
-          <CalcIcon className="w-16 h-16 text-white" />
-          <h1 className="text-white text-xl font-light tracking-widest">CALCULATOR PRO</h1>
+          <div className="w-20 h-20 bg-green-500 rounded-3xl flex items-center justify-center shadow-xl shadow-green-100">
+            <FileSpreadsheet className="w-12 h-12 text-white" />
+          </div>
+          <h1 className="text-slate-800 text-2xl font-bold tracking-tight">Sheets</h1>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen w-full bg-black overflow-hidden relative">
+    <div className="h-screen w-full bg-slate-50 overflow-hidden relative">
       <AnimatePresence mode="wait">
-        {mode === 'calculator' ? (
+        {mode === 'sheets' ? (
           <motion.div 
-            key="calc"
+            key="sheets"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ scale: 1.1, opacity: 0, filter: 'blur(10px)' }}
+            exit={{ scale: 1.05, opacity: 0, filter: 'blur(10px)' }}
             transition={{ duration: 0.4 }}
             className="h-full w-full max-w-md mx-auto relative shadow-2xl"
           >
-            <CalculatorDecoy onSecretCode={() => setMode('dashboard')} />
+            <SheetsDecoy onSecretCode={() => setMode('dashboard')} />
           </motion.div>
         ) : (
           <motion.div 
@@ -419,7 +497,7 @@ export default function GuardianApp() {
             exit={{ scale: 0.9, opacity: 0 }}
             className="h-full w-full"
           >
-            <ParentDashboard onClose={() => setMode('calculator')} />
+            <ParentDashboard onClose={() => setMode('sheets')} />
           </motion.div>
         )}
       </AnimatePresence>
