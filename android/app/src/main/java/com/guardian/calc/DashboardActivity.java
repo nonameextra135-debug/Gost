@@ -18,7 +18,7 @@ public class DashboardActivity extends AppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         
         webView.setWebViewClient(new WebViewClient());
-        // Point to your Hostinger server
-        webView.loadUrl("https://server.ironbull.io");
+        // Point to your live server
+        webView.loadUrl("https://ais-dev-c3xg62dts4ar3r6yef6jbc-408005964410.asia-southeast1.run.app");
     }
 }

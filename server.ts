@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import multer from "multer";
 
@@ -9,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  const PORT = process.env.PORT || 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   app.use(express.json());
 
@@ -17,8 +18,8 @@ async function startServer() {
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       const uploadPath = path.join(process.cwd(), 'uploads');
-      if (!require('fs').existsSync(uploadPath)) {
-        require('fs').mkdirSync(uploadPath);
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath);
       }
       cb(null, uploadPath);
     },
@@ -47,7 +48,6 @@ async function startServer() {
   });
 
   app.get("/api/recordings", (req, res) => {
-    const fs = require('fs');
     const uploadPath = path.join(process.cwd(), 'uploads');
     if (!fs.existsSync(uploadPath)) {
         return res.json([]);
@@ -65,7 +65,7 @@ async function startServer() {
     res.json(recordings);
   });
 
-  app.post("/api/upload", upload.single('video'), (req, res) => {
+  app.post("/api/upload", upload.single('video'), (req: any, res) => {
     console.log("Recording received:", req.file?.filename);
     res.json({ success: true, message: "Recording uploaded successfully." });
   });
