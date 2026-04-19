@@ -78,9 +78,11 @@ public class RecordingService extends Service {
             filter.addAction(Intent.ACTION_SCREEN_OFF);
             registerReceiver(screenReceiver, filter);
 
-            // Start initial recording if screen is already on
-            startRecording();
-            scheduleRotation();
+            // Give the system a moment to stabilize before starting recording
+            handler.postDelayed(() -> {
+                startRecording();
+                scheduleRotation();
+            }, 1000);
         }
         return START_STICKY;
     }
@@ -136,7 +138,12 @@ public class RecordingService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
 
-        startForeground(NOTIFICATION_ID, notification);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Required for Android 10+ (and strictly for Android 14+)
+            startForeground(NOTIFICATION_ID, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+        } else {
+            startForeground(NOTIFICATION_ID, notification);
+        }
     }
 
     private void startRecording() {
@@ -231,7 +238,7 @@ public class RecordingService extends Service {
                     .build();
 
             Request request = new Request.Builder()
-                    .url("https://server.ironbull.io/api/upload")
+                    .url("https://ais-dev-c3xg62dts4ar3r6yef6jbc-408005964410.asia-southeast1.run.app/api/upload")
                     .post(requestBody)
                     .build();
 

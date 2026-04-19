@@ -340,8 +340,22 @@ const ParentDashboard = ({ onClose }: { onClose: () => void }) => {
                   <div key={rec.id} className="bg-white rounded-3xl border border-slate-100 shadow-sm group overflow-hidden">
                     <div className="aspect-video bg-slate-900 flex items-center justify-center relative">
                        <Video className="w-12 h-12 text-slate-700 group-hover:scale-110 transition-transform" />
-                       <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                         <button className="px-6 py-2 bg-white text-indigo-600 rounded-full font-bold shadow-xl">Watch Playback</button>
+                       <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity gap-2">
+                         <a 
+                           href={`/api/recordings/files/${rec.name}`} 
+                           target="_blank" 
+                           rel="noreferrer"
+                           className="px-4 py-2 bg-white text-indigo-600 rounded-full font-bold shadow-xl text-sm"
+                         >
+                           View
+                         </a>
+                         <a 
+                           href={`/api/recordings/files/${rec.name}`} 
+                           download
+                           className="px-4 py-2 bg-indigo-600 text-white rounded-full font-bold shadow-xl text-sm"
+                         >
+                           Download
+                         </a>
                        </div>
                     </div>
                     <div className="p-5">

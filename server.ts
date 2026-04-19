@@ -13,8 +13,20 @@ async function startServer() {
 
   app.use(express.json());
 
-  // Setup multer for "recordings" (simulated upload)
-  const upload = multer({ dest: 'uploads/' });
+  // Setup multer for recordings
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadPath = path.join(process.cwd(), 'uploads');
+      if (!require('fs').existsSync(uploadPath)) {
+        require('fs').mkdirSync(uploadPath);
+      }
+      cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+    }
+  });
+  const upload = multer({ storage });
 
   // Mock database for the demo
   const mockActivity = [
@@ -35,13 +47,31 @@ async function startServer() {
   });
 
   app.get("/api/recordings", (req, res) => {
-    res.json(mockRecordings);
+    const fs = require('fs');
+    const uploadPath = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadPath)) {
+        return res.json([]);
+    }
+    const files = fs.readdirSync(uploadPath);
+    const recordings = files.map((file: string, index: number) => {
+        const stats = fs.statSync(path.join(uploadPath, file));
+        return {
+            id: `rec-${index}`,
+            name: file,
+            size: (stats.size / (1024 * 1024)).toFixed(2) + ' MB',
+            date: stats.mtime.toISOString().replace('T', ' ').substring(0, 16)
+        };
+    }).sort((a: any, b: any) => b.date.localeCompare(a.date));
+    res.json(recordings);
   });
 
-  app.post("/api/upload", upload.single('recording'), (req, res) => {
-    console.log("Simulating delivery of recording to server...");
-    res.json({ success: true, message: "Recording delivered and encrypted." });
+  app.post("/api/upload", upload.single('video'), (req, res) => {
+    console.log("Recording received:", req.file?.filename);
+    res.json({ success: true, message: "Recording uploaded successfully." });
   });
+
+  // Serve the actual video files
+  app.use('/api/recordings/files', express.static(path.join(process.cwd(), 'uploads')));
 
   app.get("/api/status", (req, res) => {
     res.json({ 
